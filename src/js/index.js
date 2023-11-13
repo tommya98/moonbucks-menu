@@ -9,9 +9,9 @@ function App() {
     const menuName = menuFromInput.value;
     const menuItem = menuItemTemplate(menuName);
     menuList.insertAdjacentHTML("beforeend", menuItem);
-
     const menuCountNum = menuList.querySelectorAll("li").length;
     menuCount.innerText = `총 ${menuCountNum}개`;
+    menuFromInput.value = "";
   });
 }
 
