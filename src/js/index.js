@@ -7,6 +7,7 @@ function App() {
   menuForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const menuName = menuFromInput.value;
+    if (menuName == "") return;
     const menuItem = menuItemTemplate(menuName);
     menuList.insertAdjacentHTML("beforeend", menuItem);
     const menuCountNum = menuList.querySelectorAll("li").length;
