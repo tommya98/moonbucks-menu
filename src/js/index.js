@@ -2,12 +2,16 @@ function App() {
   const menuForm = document.getElementById("espresso-menu-form");
   const menuFromInput = document.getElementById("espresso-menu-name");
   const menuList = document.getElementById("espresso-menu-list");
+  const menuCount = document.querySelector(".menu-count");
 
   menuForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const menuName = menuFromInput.value;
     const menuItem = menuItemTemplate(menuName);
     menuList.insertAdjacentHTML("beforeend", menuItem);
+
+    const menuCountNum = menuList.querySelectorAll("li").length;
+    menuCount.innerText = `총 ${menuCountNum}개`;
   });
 }
 
