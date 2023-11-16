@@ -23,6 +23,9 @@ function App() {
       const newMenuName = prompt("수정할 메뉴 이름을 적어주세요.", menuName);
       menuNameItem.innerText = newMenuName;
     }
+    if (event.target.classList.contains("menu-remove-button")) {
+      confirm(`${menuName}을 삭제할까요?`);
+    }
   });
 }
 
