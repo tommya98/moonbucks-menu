@@ -24,7 +24,12 @@ function App() {
       menuNameItem.innerText = newMenuName;
     }
     if (event.target.classList.contains("menu-remove-button")) {
-      confirm(`${menuName}을 삭제할까요?`);
+      if (confirm(`${menuName}을 삭제할까요?`)) {
+        clickedMenuItem.remove();
+      }
+      const menuCountNum = menuList.querySelectorAll("li").length;
+      menuCount.innerText = `총 ${menuCountNum}개`;
+      menuFromInput.value = "";
     }
   });
 }
