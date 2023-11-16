@@ -17,9 +17,11 @@ function App() {
 
   menuList.addEventListener("click", (event) => {
     const clickedMenuItem = event.target.parentElement;
-    const menuName = clickedMenuItem.querySelector(".menu-name").innerText;
+    const menuNameItem = clickedMenuItem.querySelector(".menu-name");
+    const menuName = menuNameItem.innerText;
     if (event.target.classList.contains("menu-edit-button")) {
-      prompt("수정할 메뉴 이름을 적어주세요.", menuName);
+      const newMenuName = prompt("수정할 메뉴 이름을 적어주세요.", menuName);
+      menuNameItem.innerText = newMenuName;
     }
   });
 }
