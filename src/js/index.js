@@ -2,7 +2,6 @@ function App() {
   const menuForm = document.getElementById("espresso-menu-form");
   const menuFromInput = document.getElementById("espresso-menu-name");
   const menuList = document.getElementById("espresso-menu-list");
-  const menuCount = document.querySelector(".menu-count");
 
   menuForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -10,9 +9,7 @@ function App() {
     if (menuName == "") return;
     const menuItem = menuItemTemplate(menuName);
     menuList.insertAdjacentHTML("beforeend", menuItem);
-    const menuCountNum = menuList.querySelectorAll("li").length;
-    menuCount.innerText = `총 ${menuCountNum}개`;
-    menuFromInput.value = "";
+    updateMenuCount();
   });
 
   menuList.addEventListener("click", (event) => {
@@ -27,9 +24,7 @@ function App() {
       if (confirm(`${menuName}을 삭제할까요?`)) {
         clickedMenuItem.remove();
       }
-      const menuCountNum = menuList.querySelectorAll("li").length;
-      menuCount.innerText = `총 ${menuCountNum}개`;
-      menuFromInput.value = "";
+      updateMenuCount();
     }
   });
 }
@@ -51,6 +46,13 @@ const menuItemTemplate = (menuName) => {
       삭제
     </button>
   </li>`;
+};
+
+const updateMenuCount = () => {
+  const menuCount = document.querySelector(".menu-count");
+  const menuCountNum = menuList.querySelectorAll("li").length;
+  menuCount.innerText = `총 ${menuCountNum}개`;
+  menuFromInput.value = "";
 };
 
 App();
