@@ -14,6 +14,14 @@ function App() {
     menuCount.innerText = `총 ${menuCountNum}개`;
     menuFromInput.value = "";
   });
+
+  menuList.addEventListener("click", (event) => {
+    const clickedMenuItem = event.target.parentElement;
+    const menuName = clickedMenuItem.querySelector(".menu-name").innerText;
+    if (event.target.classList.contains("menu-edit-button")) {
+      prompt("수정할 메뉴 이름을 적어주세요.", menuName);
+    }
+  });
 }
 
 const menuItemTemplate = (menuName) => {
