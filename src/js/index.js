@@ -1,4 +1,16 @@
+const store = {
+  setLocalStorage(menu) {
+    localStorage.setItem("menu", JSON.stringify(menu));
+  },
+  getLocalStorage() {
+    const data = localStorage.getItem("menu");
+    return JSON.parse(data);
+  },
+};
+
 function App() {
+  const menu = [];
+
   const menuForm = document.getElementById("espresso-menu-form");
   const menuFromInput = document.getElementById("espresso-menu-name");
   const menuList = document.getElementById("espresso-menu-list");
@@ -8,9 +20,9 @@ function App() {
     event.preventDefault();
     const menuName = menuFromInput.value;
     if (menuName == "") return;
-    const menuItem = menuItemTemplate(menuName);
-    menuList.insertAdjacentHTML("beforeend", menuItem);
-    updateMenuCount();
+    menu.push({ name: menuName });
+    store.setLocalStorage(menu);
+    renderMenuList();
   });
 
   menuList.addEventListener("click", (event) => {
@@ -24,24 +36,29 @@ function App() {
   });
 
   const updateMenuName = (clickedMenuItem) => {
+    const menuId = clickedMenuItem.dataset.menuId;
     const menuNameItem = clickedMenuItem.querySelector(".menu-name");
     const menuName = menuNameItem.innerText;
     const newMenuName = prompt("수정할 메뉴 이름을 적어주세요.", menuName);
-    menuNameItem.innerText = newMenuName;
+    menu[menuId].name = newMenuName;
+    store.setLocalStorage(menu);
+    renderMenuList();
   };
 
   const removeMenuName = (clickedMenuItem) => {
+    const menuId = clickedMenuItem.dataset.menuId;
     const menuName = clickedMenuItem.querySelector(".menu-name").innerText;
     if (confirm(`${menuName}을 삭제할까요?`)) {
-      clickedMenuItem.remove();
+      menu.splice(menuId, 1);
+      store.setLocalStorage(menu);
+      renderMenuList();
     }
-    updateMenuCount();
   };
 
-  const menuItemTemplate = (menuName) => {
+  const menuItemTemplate = (menu, index) => {
     return `
-    <li class="menu-list-item d-flex items-center py-2">
-      <span class="w-100 pl-2 menu-name">${menuName}</span>
+    <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
+      <span class="w-100 pl-2 menu-name">${menu.name}</span>
       <button
         type="button"
         class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -55,6 +72,16 @@ function App() {
         삭제
       </button>
     </li>`;
+  };
+
+  const renderMenuList = () => {
+    const template = menu
+      .map((item, index) => {
+        return menuItemTemplate(item, index);
+      })
+      .join("");
+    menuList.innerHTML = template;
+    updateMenuCount();
   };
 
   const updateMenuCount = () => {
