@@ -89,6 +89,12 @@ function App() {
     menuCount.innerText = `총 ${menuCountNum}개`;
     menuFromInput.value = "";
   };
+
+  (() => {
+    const data = store.getLocalStorage();
+    menu.push(...data);
+    renderMenuList();
+  })();
 }
 
 App();
