@@ -9,18 +9,38 @@ const store = {
 };
 
 function App() {
-  const menu = [];
+  const menu = {
+    espresso: [],
+    frappuccino: [],
+    blended: [],
+    teavana: [],
+    desert: [],
+  };
+  let currentCategory = "espresso";
 
   const menuForm = document.getElementById("espresso-menu-form");
   const menuFromInput = document.getElementById("espresso-menu-name");
   const menuList = document.getElementById("espresso-menu-list");
   const menuCount = document.querySelector(".menu-count");
+  const menuNav = document.querySelector("nav");
+  const menuHeading = document.querySelector(".heading h2");
+
+  menuNav.addEventListener("click", (event) => {
+    const isCategoryBtn = event.target.classList.contains("cafe-category-name");
+    if (!isCategoryBtn) return;
+    const categoryNameEn = event.target.dataset.categoryName;
+    const categoryNameKr = event.target.innerText;
+    currentCategory = categoryNameEn;
+    renderMenuList();
+    menuFromInput.placeholder = `${categoryNameKr.substr(2).trim()} 메뉴 이름`;
+    menuHeading.innerText = `${categoryNameKr} 메뉴 관리`;
+  });
 
   menuForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const menuName = menuFromInput.value;
     if (menuName == "") return;
-    menu.push({ name: menuName });
+    menu[currentCategory].push({ name: menuName });
     store.setLocalStorage(menu);
     renderMenuList();
   });
@@ -40,7 +60,7 @@ function App() {
     const menuNameItem = clickedMenuItem.querySelector(".menu-name");
     const menuName = menuNameItem.innerText;
     const newMenuName = prompt("수정할 메뉴 이름을 적어주세요.", menuName);
-    menu[menuId].name = newMenuName;
+    menu[currentCategory][menuId].name = newMenuName;
     store.setLocalStorage(menu);
     renderMenuList();
   };
@@ -49,7 +69,7 @@ function App() {
     const menuId = clickedMenuItem.dataset.menuId;
     const menuName = clickedMenuItem.querySelector(".menu-name").innerText;
     if (confirm(`${menuName}을 삭제할까요?`)) {
-      menu.splice(menuId, 1);
+      menu[currentCategory].splice(menuId, 1);
       store.setLocalStorage(menu);
       renderMenuList();
     }
@@ -75,7 +95,7 @@ function App() {
   };
 
   const renderMenuList = () => {
-    const template = menu
+    const template = menu[currentCategory]
       .map((item, index) => {
         return menuItemTemplate(item, index);
       })
@@ -92,7 +112,7 @@ function App() {
 
   (() => {
     const data = store.getLocalStorage();
-    menu.push(...data);
+    Object.assign(menu, data);
     renderMenuList();
   })();
 }
