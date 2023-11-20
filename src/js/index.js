@@ -18,9 +18,9 @@ function App() {
   };
   let currentCategory = "espresso";
 
-  const menuForm = document.getElementById("espresso-menu-form");
-  const menuFromInput = document.getElementById("espresso-menu-name");
-  const menuList = document.getElementById("espresso-menu-list");
+  const menuForm = document.getElementById("menu-form");
+  const menuFromInput = document.getElementById("menu-name");
+  const menuList = document.getElementById("menu-list");
   const menuCount = document.querySelector(".menu-count");
   const menuNav = document.querySelector("nav");
   const menuHeading = document.querySelector(".heading h2");
@@ -32,7 +32,6 @@ function App() {
     const categoryNameKr = event.target.innerText;
     currentCategory = categoryNameEn;
     renderMenuList();
-    menuFromInput.placeholder = `${categoryNameKr.substr(2).trim()} 메뉴 이름`;
     menuHeading.innerText = `${categoryNameKr} 메뉴 관리`;
   });
 
