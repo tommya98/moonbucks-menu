@@ -1,12 +1,4 @@
-const store = {
-  setLocalStorage(menu) {
-    localStorage.setItem("menu", JSON.stringify(menu));
-  },
-  getLocalStorage() {
-    const data = localStorage.getItem("menu");
-    return JSON.parse(data);
-  },
-};
+import stroe from "./store/index.js";
 
 function App() {
   const menu = {
@@ -24,41 +16,6 @@ function App() {
   const menuCount = document.querySelector(".menu-count");
   const menuNav = document.querySelector("nav");
   const menuHeading = document.querySelector(".heading h2");
-
-  menuNav.addEventListener("click", (event) => {
-    const isCategoryBtn = event.target.classList.contains("cafe-category-name");
-    if (!isCategoryBtn) return;
-    const categoryNameEn = event.target.dataset.categoryName;
-    const categoryNameKr = event.target.innerText;
-    currentCategory = categoryNameEn;
-    renderMenuList();
-    menuHeading.innerText = `${categoryNameKr} 메뉴 관리`;
-  });
-
-  menuForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const menuName = menuFromInput.value;
-    if (menuName == "") return;
-    menu[currentCategory].push({ name: menuName });
-    store.setLocalStorage(menu);
-    renderMenuList();
-  });
-
-  menuList.addEventListener("click", (event) => {
-    const clickedMenuItem = event.target.parentElement;
-    if (event.target.classList.contains("menu-edit-button")) {
-      updateMenuName(clickedMenuItem);
-      return;
-    }
-    if (event.target.classList.contains("menu-remove-button")) {
-      removeMenuName(clickedMenuItem);
-      return;
-    }
-    if (event.target.classList.contains("menu-sold-out-button")) {
-      soldOutMenu(clickedMenuItem);
-      return;
-    }
-  });
 
   const updateMenuName = (clickedMenuItem) => {
     const menuId = clickedMenuItem.dataset.menuId;
@@ -131,10 +88,49 @@ function App() {
     menuCount.innerText = `총 ${menuCountNum}개`;
   };
 
+  const initEventListener = () => {
+    menuNav.addEventListener("click", (event) => {
+      const isCategoryBtn =
+        event.target.classList.contains("cafe-category-name");
+      if (!isCategoryBtn) return;
+      const categoryNameEn = event.target.dataset.categoryName;
+      const categoryNameKr = event.target.innerText;
+      currentCategory = categoryNameEn;
+      renderMenuList();
+      menuHeading.innerText = `${categoryNameKr} 메뉴 관리`;
+    });
+
+    menuForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const menuName = menuFromInput.value;
+      if (menuName == "") return;
+      menu[currentCategory].push({ name: menuName });
+      store.setLocalStorage(menu);
+      renderMenuList();
+    });
+
+    menuList.addEventListener("click", (event) => {
+      const clickedMenuItem = event.target.parentElement;
+      if (event.target.classList.contains("menu-edit-button")) {
+        updateMenuName(clickedMenuItem);
+        return;
+      }
+      if (event.target.classList.contains("menu-remove-button")) {
+        removeMenuName(clickedMenuItem);
+        return;
+      }
+      if (event.target.classList.contains("menu-sold-out-button")) {
+        soldOutMenu(clickedMenuItem);
+        return;
+      }
+    });
+  };
+
   (() => {
     const data = store.getLocalStorage();
     Object.assign(menu, data);
     renderMenuList();
+    initEventListener();
   })();
 }
 
