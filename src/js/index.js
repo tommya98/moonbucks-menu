@@ -48,9 +48,15 @@ function App() {
     const clickedMenuItem = event.target.parentElement;
     if (event.target.classList.contains("menu-edit-button")) {
       updateMenuName(clickedMenuItem);
+      return;
     }
     if (event.target.classList.contains("menu-remove-button")) {
       removeMenuName(clickedMenuItem);
+      return;
+    }
+    if (event.target.classList.contains("menu-sold-out-button")) {
+      soldOutMenu(clickedMenuItem);
+      return;
     }
   });
 
@@ -74,10 +80,26 @@ function App() {
     }
   };
 
+  const soldOutMenu = (clickedMenuItem) => {
+    const menuId = clickedMenuItem.dataset.menuId;
+    menu[currentCategory][menuId].soldOut =
+      !menu[currentCategory][menuId].soldOut;
+    store.setLocalStorage(menu);
+    renderMenuList();
+  };
+
   const menuItemTemplate = (menu, index) => {
     return `
-    <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
-      <span class="w-100 pl-2 menu-name">${menu.name}</span>
+    <li data-menu-id="${index}" class=" menu-list-item d-flex items-center py-2">
+      <span class="w-100 pl-2 menu-name ${menu.soldOut ? "sold-out" : ""}">${
+      menu.name
+    }</span>
+        <button
+        type="button"
+        class="bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button"
+      >
+        품절
+      </button>
       <button
         type="button"
         class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -100,13 +122,13 @@ function App() {
       })
       .join("");
     menuList.innerHTML = template;
+    menuFromInput.value = "";
     updateMenuCount();
   };
 
   const updateMenuCount = () => {
-    const menuCountNum = menuList.querySelectorAll("li").length;
+    const menuCountNum = menu[currentCategory].length;
     menuCount.innerText = `총 ${menuCountNum}개`;
-    menuFromInput.value = "";
   };
 
   (() => {
