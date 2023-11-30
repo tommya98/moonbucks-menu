@@ -12,10 +12,18 @@ const MenuApi = {
       body: JSON.stringify({ name: menuName }),
     });
   },
-
   getAllMenuByCategory: async (category) => {
     const response = await fetch(`${BASE_URL}/category/${category}/menu`);
     return response.json();
+  },
+  putChnagedMenuName: async (category, menuName, menuId) => {
+    await fetch(`${BASE_URL}/category/${category}/menu/${menuId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: menuName }),
+    });
   },
 };
 
@@ -36,14 +44,13 @@ function App() {
   const menuNav = document.querySelector("nav");
   const menuHeading = document.querySelector(".heading h2");
 
-  const updateMenuName = (clickedMenuItem) => {
+  const updateMenuName = async (clickedMenuItem) => {
     const menuId = clickedMenuItem.dataset.menuId;
     const menuNameItem = clickedMenuItem.querySelector(".menu-name");
     const menuName = menuNameItem.innerText;
     const newMenuName = prompt("수정할 메뉴 이름을 적어주세요.", menuName);
-    menu[currentCategory][menuId].name = newMenuName;
-    store.setLocalStorage(menu);
-    renderMenuList();
+    await MenuApi.putChnagedMenuName(currentCategory, newMenuName, menuId);
+    await renderMenuList();
   };
 
   const removeMenuName = (clickedMenuItem) => {
@@ -64,9 +71,11 @@ function App() {
     renderMenuList();
   };
 
-  const menuItemTemplate = (menu, index) => {
+  const menuItemTemplate = (menu) => {
     return `
-    <li data-menu-id="${index}" class=" menu-list-item d-flex items-center py-2">
+    <li data-menu-id="${
+      menu.id
+    }" class=" menu-list-item d-flex items-center py-2">
       <span class="w-100 pl-2 menu-name ${menu.soldOut ? "sold-out" : ""}">${
       menu.name
     }</span>
@@ -95,8 +104,8 @@ function App() {
     const data = await MenuApi.getAllMenuByCategory(currentCategory);
     menu[currentCategory] = data;
     const template = menu[currentCategory]
-      .map((item, index) => {
-        return menuItemTemplate(item, index);
+      .map((item) => {
+        return menuItemTemplate(item);
       })
       .join("");
     menuList.innerHTML = template;
@@ -110,14 +119,14 @@ function App() {
   };
 
   const initEventListener = () => {
-    menuNav.addEventListener("click", (event) => {
+    menuNav.addEventListener("click", async (event) => {
       const isCategoryBtn =
         event.target.classList.contains("cafe-category-name");
       if (!isCategoryBtn) return;
       const categoryNameEn = event.target.dataset.categoryName;
       const categoryNameKr = event.target.innerText;
       currentCategory = categoryNameEn;
-      renderMenuList();
+      await renderMenuList();
       menuHeading.innerText = `${categoryNameKr} 메뉴 관리`;
     });
 
@@ -129,10 +138,10 @@ function App() {
       await renderMenuList();
     });
 
-    menuList.addEventListener("click", (event) => {
+    menuList.addEventListener("click", async (event) => {
       const clickedMenuItem = event.target.parentElement;
       if (event.target.classList.contains("menu-edit-button")) {
-        updateMenuName(clickedMenuItem);
+        await updateMenuName(clickedMenuItem);
         return;
       }
       if (event.target.classList.contains("menu-remove-button")) {
@@ -149,8 +158,7 @@ function App() {
   (async () => {
     const data = await MenuApi.getAllMenuByCategory(currentCategory);
     menu[currentCategory] = data;
-    console.log(menu);
-    renderMenuList();
+    await renderMenuList();
     initEventListener();
   })();
 }
