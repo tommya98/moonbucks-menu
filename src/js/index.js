@@ -25,6 +25,14 @@ const MenuApi = {
       body: JSON.stringify({ name: menuName }),
     });
   },
+  deleteMenu: async (category, menuId) => {
+    await fetch(`${BASE_URL}/category/${category}/menu/${menuId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  },
 };
 
 function App() {
@@ -53,12 +61,11 @@ function App() {
     await renderMenuList();
   };
 
-  const removeMenuName = (clickedMenuItem) => {
+  const removeMenuName = async (clickedMenuItem) => {
     const menuId = clickedMenuItem.dataset.menuId;
     const menuName = clickedMenuItem.querySelector(".menu-name").innerText;
     if (confirm(`${menuName}을 삭제할까요?`)) {
-      menu[currentCategory].splice(menuId, 1);
-      store.setLocalStorage(menu);
+      await MenuApi.deleteMenu(currentCategory, menuId);
       renderMenuList();
     }
   };
