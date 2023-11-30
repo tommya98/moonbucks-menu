@@ -33,6 +33,14 @@ const MenuApi = {
       },
     });
   },
+  putMenuSoldout: async (category, menuId) => {
+    await fetch(`${BASE_URL}/category/${category}/menu/${menuId}/soldout`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  },
 };
 
 function App() {
@@ -70,11 +78,9 @@ function App() {
     }
   };
 
-  const soldOutMenu = (clickedMenuItem) => {
+  const soldOutMenu = async (clickedMenuItem) => {
     const menuId = clickedMenuItem.dataset.menuId;
-    menu[currentCategory][menuId].soldOut =
-      !menu[currentCategory][menuId].soldOut;
-    store.setLocalStorage(menu);
+    await MenuApi.putMenuSoldout(currentCategory, menuId);
     renderMenuList();
   };
 
@@ -83,7 +89,7 @@ function App() {
     <li data-menu-id="${
       menu.id
     }" class=" menu-list-item d-flex items-center py-2">
-      <span class="w-100 pl-2 menu-name ${menu.soldOut ? "sold-out" : ""}">${
+      <span class="w-100 pl-2 menu-name ${menu.isSoldOut ? "sold-out" : ""}">${
       menu.name
     }</span>
         <button
