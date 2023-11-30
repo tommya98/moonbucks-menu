@@ -1,4 +1,23 @@
-import stroe from "./store/index.js";
+import store from "./store/index.js";
+
+const BASE_URL = "http://localhost:3000/api";
+
+const MenuApi = {
+  postNewMenu: async (category, menuName) => {
+    await fetch(`${BASE_URL}/category/${category}/menu`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: menuName }),
+    });
+  },
+
+  getAllMenuByCategory: async (category) => {
+    const response = await fetch(`${BASE_URL}/category/${category}/menu`);
+    return response.json();
+  },
+};
 
 function App() {
   const menu = {
@@ -72,7 +91,9 @@ function App() {
     </li>`;
   };
 
-  const renderMenuList = () => {
+  const renderMenuList = async () => {
+    const data = await MenuApi.getAllMenuByCategory(currentCategory);
+    menu[currentCategory] = data;
     const template = menu[currentCategory]
       .map((item, index) => {
         return menuItemTemplate(item, index);
@@ -100,13 +121,12 @@ function App() {
       menuHeading.innerText = `${categoryNameKr} 메뉴 관리`;
     });
 
-    menuForm.addEventListener("submit", (event) => {
+    menuForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const menuName = menuFromInput.value;
       if (menuName == "") return;
-      menu[currentCategory].push({ name: menuName });
-      store.setLocalStorage(menu);
-      renderMenuList();
+      await MenuApi.postNewMenu(currentCategory, menuName);
+      await renderMenuList();
     });
 
     menuList.addEventListener("click", (event) => {
@@ -126,9 +146,10 @@ function App() {
     });
   };
 
-  (() => {
-    const data = store.getLocalStorage();
-    Object.assign(menu, data);
+  (async () => {
+    const data = await MenuApi.getAllMenuByCategory(currentCategory);
+    menu[currentCategory] = data;
+    console.log(menu);
     renderMenuList();
     initEventListener();
   })();
