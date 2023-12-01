@@ -168,6 +168,14 @@ function App() {
       event.preventDefault();
       const menuName = menuFromInput.value;
       if (menuName == "") return;
+      const duplicatedItem = menu[currentCategory].find(
+        (menuItem) => menuItem.name === menuName
+      );
+      if (duplicatedItem) {
+        alert("이미 존재하는 메뉴입니다. 다시 입력해주세요.");
+        await renderMenuList();
+        return;
+      }
       await MenuApi.postNewMenu(currentCategory, menuName);
       await renderMenuList();
     });
