@@ -88,34 +88,35 @@ function App() {
     menuCount.innerText = `총 ${menuCountNum}개`;
   };
 
+  const changeCategory = async (event) => {
+    const isCategoryBtn = event.target.classList.contains("cafe-category-name");
+    if (!isCategoryBtn) return;
+    const categoryNameEn = event.target.dataset.categoryName;
+    const categoryNameKr = event.target.innerText;
+    currentCategory = categoryNameEn;
+    await renderMenuList();
+    menuHeading.innerText = `${categoryNameKr} 메뉴 관리`;
+  };
+
+  const addMenu = async (event) => {
+    event.preventDefault();
+    const menuName = menuFromInput.value;
+    if (menuName == "") return;
+    const duplicatedItem = menu[currentCategory].find(
+      (menuItem) => menuItem.name === menuName
+    );
+    if (duplicatedItem) {
+      alert("이미 존재하는 메뉴입니다. 다시 입력해주세요.");
+      await renderMenuList();
+      return;
+    }
+    await MenuApi.postNewMenu(currentCategory, menuName);
+    await renderMenuList();
+  };
+
   const initEventListener = () => {
-    menuNav.addEventListener("click", async (event) => {
-      const isCategoryBtn =
-        event.target.classList.contains("cafe-category-name");
-      if (!isCategoryBtn) return;
-      const categoryNameEn = event.target.dataset.categoryName;
-      const categoryNameKr = event.target.innerText;
-      currentCategory = categoryNameEn;
-      await renderMenuList();
-      menuHeading.innerText = `${categoryNameKr} 메뉴 관리`;
-    });
-
-    menuForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const menuName = menuFromInput.value;
-      if (menuName == "") return;
-      const duplicatedItem = menu[currentCategory].find(
-        (menuItem) => menuItem.name === menuName
-      );
-      if (duplicatedItem) {
-        alert("이미 존재하는 메뉴입니다. 다시 입력해주세요.");
-        await renderMenuList();
-        return;
-      }
-      await MenuApi.postNewMenu(currentCategory, menuName);
-      await renderMenuList();
-    });
-
+    menuNav.addEventListener("click", changeCategory);
+    menuForm.addEventListener("submit", addMenu);
     menuList.addEventListener("click", async (event) => {
       const clickedMenuItem = event.target.parentElement;
       if (event.target.classList.contains("menu-edit-button")) {
